@@ -1,0 +1,1 @@
+There are some places where the logic doesn't make sense, but it's understandable that there can't really be ghost-forced logic.

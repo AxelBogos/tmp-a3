@@ -1,0 +1,1 @@
+After watching it, all the movies that play one star will automatically add one star.

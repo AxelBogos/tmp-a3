@@ -1,0 +1,1 @@
+Get rid of the highest score and the lowest score. I'll give you 0.5.

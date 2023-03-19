@@ -1,0 +1,1 @@
+There's an obvious bug that pinhole camera batteries can't be that long.

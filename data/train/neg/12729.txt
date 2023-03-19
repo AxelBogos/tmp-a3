@@ -1,0 +1,1 @@
+Repeated selection of films is not smooth.

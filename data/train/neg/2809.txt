@@ -1,0 +1,1 @@
+The best score should be 6, which is hard to read at first.

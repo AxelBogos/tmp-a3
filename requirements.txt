@@ -1,0 +1,11 @@
+requests
+matplotlib
+numpy
+scikit-learn
+torch
+tqdm
+transformers
+pandas
+IPython
+ftfy
+jupyter

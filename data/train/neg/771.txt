@@ -1,0 +1,1 @@
+Some films have five stars because Douban has only five stars at most, and some films have one star because Douban has only one star at the lowest.
