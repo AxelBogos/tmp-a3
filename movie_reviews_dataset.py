@@ -119,7 +119,8 @@ class MovieReviewsDataset(Dataset):
     @staticmethod
     def augment_data(content, n_augmentations=1):
         augmented_texts = []
-
+        if content == '':
+            return augmented_texts
         for _ in range(n_augmentations):
             choice = random.choice(['deletion', 'swap', 'synonym'])
             if choice == 'deletion':

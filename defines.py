@@ -1,9 +1,9 @@
 import torch
 
-epochs = 2
+epochs = 5
 batch_size = 32
-learning_rate = 2e-5
-max_length = 128  # orig is 60
+learning_rate = 9e-6
+max_length = 60  # orig is 60
 device = 'cpu'
 if torch.cuda.is_available():
     device = torch.device('cuda')
