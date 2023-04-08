@@ -10,6 +10,7 @@ def train(model, dataloader, optimizer_, scheduler_, device_):
     # Tracking variables.
     predictions_labels = []
     true_labels = []
+    predictions_probs = []
     # Total loss for this epoch.
     total_loss = 0
 
@@ -64,6 +65,9 @@ def train(model, dataloader, optimizer_, scheduler_, device_):
         # Move logits and labels to CPU
         logits = logits.detach().cpu().numpy()
 
+        # Store predictions and true labels
+        predictions_probs.append(logits)
+
         # Convert these logits to list of predicted labels values.
         predictions_labels += logits.argmax(axis=-1).flatten().tolist()
 
@@ -71,7 +75,7 @@ def train(model, dataloader, optimizer_, scheduler_, device_):
     avg_epoch_loss = total_loss / len(dataloader)
 
     # Return all true labels and prediction for future evaluations.
-    return true_labels, predictions_labels, avg_epoch_loss
+    return true_labels, predictions_labels, predictions_probs, avg_epoch_loss
 
 
 def validation(model, dataloader, device_):

@@ -118,6 +118,8 @@ def main():
     # Store the average loss after each epoch so we can plot them.
     all_loss = {'train_loss': [], 'val_loss': []}
     all_acc = {'train_acc': [], 'val_acc': []}
+    all_probs = {'train_probs': [], 'val_probs': []}
+    all_labels = {'train_labels': [], 'val_labels': []}
 
     # Loop through each epoch.
     print('Epoch')
@@ -125,12 +127,12 @@ def main():
         print()
         print('Training on batches...')
         # Perform one full pass over the training set.
-        train_labels, train_predict, train_loss = train(model, train_dataloader, optimizer, scheduler, device)
+        train_labels, train_predict, train_probs, train_loss = train(model, train_dataloader, optimizer, scheduler, device)
         train_acc = accuracy_score(train_labels, train_predict)
 
         # Get prediction form model on validation data.
         print('Validation on batches...')
-        valid_labels, valid_predict, val_loss = validation(model, valid_dataloader, device)
+        valid_labels, valid_predict, val_probs, val_loss = validation(model, valid_dataloader, device)
         val_acc = accuracy_score(valid_labels, valid_predict)
 
         # Print loss and accuracy values to see how training evolves.
@@ -143,6 +145,10 @@ def main():
         all_loss['val_loss'].append(val_loss)
         all_acc['train_acc'].append(train_acc)
         all_acc['val_acc'].append(val_acc)
+        all_probs['train_probs'].append(train_probs)
+        all_probs['val_probs'].append(val_probs)
+        all_labels['train_labels'].append(train_labels)
+        all_labels['val_labels'].append(valid_labels)
 
     # Plot loss curves.
     plot_dict(all_loss, use_xlabel='Epochs', use_ylabel='Value', use_linestyles=['-', '--'],
@@ -152,6 +158,7 @@ def main():
     plot_dict(all_acc, use_xlabel='Epochs', use_ylabel='Value', use_linestyles=['-', '--'],
               path=os.path.join(output_path, 'acc.png'))
 
+    plot_roc_auc(all_labels, all_probs, os.path.join(output_path, 'roc_auc.png'))
     ## **Evaluate**
 
     # Get prediction form model on validation data. This is where you should use
@@ -170,7 +177,7 @@ def main():
                           classes=list(labels_ids.keys()), normalize=True,
                           magnify=0.1, path=os.path.join(output_path, 'confusion_matrix.png')
                           )
-    plot_roc_auc(true_labels, prediction_probs[:, 1], os.path.join(output_path, 'roc_auc.png'))
+
 
     # Infer on test set.
     inference(model, test_dataloader, device,output_path)
