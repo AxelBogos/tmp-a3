@@ -10,13 +10,14 @@ def train(model, dataloader, optimizer_, scheduler_, device_):
     # Tracking variables.
     predictions_labels = []
     true_labels = []
+
     predictions_probs = []
     # Total loss for this epoch.
     total_loss = 0
 
     # Put the model into training mode.
     model.train()
-
+    count = 0
     # For each batch of training data...
     for batch in tqdm(dataloader, total=len(dataloader)):
         # Add original labels - use later for evaluation.
@@ -66,10 +67,14 @@ def train(model, dataloader, optimizer_, scheduler_, device_):
         logits = logits.detach().cpu().numpy()
 
         # Store predictions and true labels
-        predictions_probs.append(logits)
+        predictions_probs.extend(logits[:, 1])
 
         # Convert these logits to list of predicted labels values.
         predictions_labels += logits.argmax(axis=-1).flatten().tolist()
+
+        count += 1
+        if count > 1:
+            break
 
     # Calculate the average loss over the training data.
     avg_epoch_loss = total_loss / len(dataloader)
@@ -89,7 +94,7 @@ def validation(model, dataloader, device_):
     # Put the model in evaluation mode--the dropout layers behave differently
     # during evaluation.
     model.eval()
-
+    count = 0
     # Evaluate data for one epoch
     for batch in tqdm(dataloader, total=len(dataloader)):
         # add original labels
@@ -125,13 +130,17 @@ def validation(model, dataloader, device_):
             total_loss += loss.item()
 
             # get predicts probabilities
-            predictions_probs.append(logits)
+            predictions_probs.extend(logits[:, 1])
 
             # get predicitons to list
             predict_content = logits.argmax(axis=-1).flatten().tolist()
 
             # update list
             predictions_labels += predict_content
+
+            count += 1
+            if count > 1:
+                break
 
     # Calculate the average loss over the training data.
     avg_epoch_loss = total_loss / len(dataloader)

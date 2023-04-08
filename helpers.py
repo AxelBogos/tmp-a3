@@ -8,14 +8,12 @@ from movie_reviews_dataset import MovieReviewsDataset
 
 
 def plot_roc_auc(all_labels, all_probs, output_path):
-    print("All labels: ", all_labels)
-    print("All probs: ", all_probs)
     # Calculate the ROC curve and AUC for training data
-    train_fpr, train_tpr, _ = roc_curve(all_labels['train_labels'], all_probs['train_probs'][:, 1])
+    train_fpr, train_tpr, _ = roc_curve(all_labels['train_labels'], all_probs['train_probs'])
     train_auc = auc(train_fpr, train_tpr)
 
     # Calculate the ROC curve and AUC for validation data
-    val_fpr, val_tpr, _ = roc_curve(all_labels['val_labels'], all_probs['val_probs'][:, 1])
+    val_fpr, val_tpr, _ = roc_curve(all_labels['val_labels'], all_probs['val_probs'])
     val_auc = auc(val_fpr, val_tpr)
 
     # Plot the ROC curve

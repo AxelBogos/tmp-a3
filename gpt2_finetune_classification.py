@@ -4,7 +4,7 @@ from datetime import datetime
 from defines import epochs, device, model_name_or_path, labels_ids, n_labels, random_seed
 from ml_things import plot_dict, plot_confusion_matrix
 from sklearn.metrics import classification_report, accuracy_score
-from transformers import (set_seed, 
+from transformers import (set_seed,
                           GPT2Config,
                           GPT2Tokenizer,
                           AdamW,
@@ -97,10 +97,10 @@ def main():
         all_loss['val_loss'].append(val_loss)
         all_acc['train_acc'].append(train_acc)
         all_acc['val_acc'].append(val_acc)
-        all_probs['train_probs'].append(train_probs)
-        all_probs['val_probs'].append(val_probs)
-        all_labels['train_labels'].append(train_labels)
-        all_labels['val_labels'].append(valid_labels)
+        all_probs['train_probs'].extend(train_probs)
+        all_probs['val_probs'].extend(val_probs)
+        all_labels['train_labels'].extend(train_labels)
+        all_labels['val_labels'].extend(valid_labels)
 
     # Plot loss curves.
     plot_dict(all_loss, use_xlabel='Epochs', use_ylabel='Value', use_linestyles=['-', '--'],
