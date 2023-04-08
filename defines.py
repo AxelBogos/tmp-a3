@@ -1,6 +1,5 @@
 import torch
-from datetime import datetime
-epochs = 0
+epochs = 5
 batch_size = 32
 max_length = 60
 device = 'cpu'
