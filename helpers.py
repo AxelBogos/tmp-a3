@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc
 from torch.utils.data import DataLoader
 
+import defines
 from defines import labels_ids, max_length
 from gpt2_classification_collator import Gpt2ClassificationCollator
 from movie_reviews_dataset import MovieReviewsDataset
@@ -42,7 +43,7 @@ def get_dataloaders(tokenizer,batch_size):
     print('Dealing with Train...')
     # Create pytorch dataset.
     train_dataset = MovieReviewsDataset(path='./data/train',
-                                        use_tokenizer=tokenizer, split='train', backtranslate_enabled=True)
+                                        use_tokenizer=tokenizer, split='train', backtranslate_enabled=defines.backtranslation_enabled)
     print('Created `train_dataset` with %d examples!' % len(train_dataset))
     # Move pytorch dataset into dataloader.
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,
@@ -52,7 +53,7 @@ def get_dataloaders(tokenizer,batch_size):
     print('Dealing with Validation...')
     # Create pytorch dataset.
     valid_dataset = MovieReviewsDataset(path='./data/val',
-                                        use_tokenizer=tokenizer, split='val', backtranslate_enabled=True)
+                                        use_tokenizer=tokenizer, split='val', backtranslate_enabled=defines.backtranslation_enabled)
     print('Created `valid_dataset` with %d examples!' % len(valid_dataset))
     # Move pytorch dataset into dataloader.
     valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False,
@@ -65,10 +66,12 @@ def get_dataloaders(tokenizer,batch_size):
     print('Dealing with Test...')
     # Create pytorch dataset.
     test_dataset = MovieReviewsDataset(path='./data/test',
-                                       use_tokenizer=tokenizer, split='test', backtranslate_enabled=True)
+                                       use_tokenizer=tokenizer, split='test', backtranslate_enabled=defines.backtranslation_enabled)
     print('Created `test_dataset` with %d examples!' % len(test_dataset))
     # Move pytorch dataset into dataloader.
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False,
                                  collate_fn=gpt2_classificaiton_collator_test)
     print('Created `test_dataloader` with %d batches!' % len(test_dataloader))
     return test_dataloader, train_dataloader, valid_dataloader
+
+

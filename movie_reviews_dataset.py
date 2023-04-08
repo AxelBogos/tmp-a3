@@ -5,6 +5,11 @@ from ftfy import fix_text
 from torch.utils.data import Dataset
 from tqdm import tqdm
 from transformers import MarianMTModel, MarianTokenizer
+import random
+import nltk
+from nltk.corpus import wordnet
+
+nltk.download('wordnet')
 
 
 class MovieReviewsDataset(Dataset):
@@ -21,10 +26,13 @@ class MovieReviewsDataset(Dataset):
 
     """
 
-    def __init__(self, path, use_tokenizer, split, backtranslate_enabled=False, target_lang='fr'):
+    def __init__(self, path, use_tokenizer, split, backtranslate_enabled=False, target_lang='fr',
+                 data_augmentation_enabled=False, n_augmentations=1):
 
         self.backtranslate_enabled = backtranslate_enabled
         self.target_lang = target_lang
+        self.data_augmentation_enabled = data_augmentation_enabled
+        self.n_augmentations = n_augmentations
 
         # Check if path exists.
         if not os.path.isdir(path):
@@ -60,6 +68,10 @@ class MovieReviewsDataset(Dataset):
                         backtranslated_text = self.backtranslate(content, target_lang=self.target_lang)
                         self.texts.append(backtranslated_text)
                         self.labels.append(label)
+                    if self.data_augmentation_enabled:
+                        augmented_texts = self.augment_data(content, self.n_augmentations)
+                        self.texts.extend(augmented_texts)
+                        self.labels.extend([label] * len(augmented_texts))
 
             # Number of exmaples.
             self.n_examples = len(self.labels)
@@ -104,7 +116,25 @@ class MovieReviewsDataset(Dataset):
                     'label': None,
                     'file_id': self.file_ids[item]}
 
-    def backtranslate(self, text, source_lang='en', target_lang='fr'):
+    @staticmethod
+    def augment_data(content, n_augmentations=1):
+        augmented_texts = []
+
+        for _ in range(n_augmentations):
+            choice = random.choice(['deletion', 'swap', 'synonym'])
+            if choice == 'deletion':
+                augmented_text = ' '.join(random_deletion(content))
+            elif choice == 'swap':
+                augmented_text = ' '.join(random_swap(content))
+            else:  # choice == 'synonym'
+                augmented_text = ' '.join(synonym_replacement(content))
+
+            augmented_texts.append(augmented_text)
+
+        return augmented_texts
+
+    @staticmethod
+    def backtranslate(text, source_lang='en', target_lang='fr'):
         # Initialize the tokenizer and model for translation to the target language
         tokenizer_to = MarianTokenizer.from_pretrained(f'Helsinki-NLP/opus-mt-{source_lang}-{target_lang}')
         model_to = MarianMTModel.from_pretrained(f'Helsinki-NLP/opus-mt-{source_lang}-{target_lang}')
@@ -124,3 +154,43 @@ class MovieReviewsDataset(Dataset):
         backtranslated_text = tokenizer_back.decode(back_translated[0])
 
         return backtranslated_text
+
+
+def random_deletion(sentence, p=0.1):
+    words = sentence.split()
+    if len(words) == 1:
+        return words
+    remaining_words = [word for word in words if random.uniform(0, 1) > p]
+    if len(remaining_words) == 0:
+        return [random.choice(words)]
+    else:
+        return remaining_words
+
+
+def random_swap(sentence, n=1):
+    words = sentence.split()
+    length = len(words)
+    if length < 2:
+        return words
+    for _ in range(n):
+        i, j = random.randint(0, length - 2), random.randint(1, length - 1)
+        words[i], words[j] = words[j], words[i]
+    return words
+
+
+def synonym_replacement(sentence, n=1):
+    words = sentence.split()
+    new_words = words.copy()
+    for _ in range(n):
+        word_idx = random.randint(0, len(words) - 1)
+        word = words[word_idx]
+        synonyms = []
+
+        for syn in wordnet.synsets(word):
+            for lemma in syn.lemmas():
+                synonyms.append(lemma.name())
+
+        if len(synonyms) > 0:
+            new_words[word_idx] = random.choice(synonyms)
+
+    return new_words
