@@ -19,7 +19,7 @@ def train(model, dataloader, optimizer_, scheduler_, device_):
     model.train()
     count = 0
     # For each batch of training data...
-    for batch in tqdm(dataloader, total=len(dataloader)):
+    for batch in tqdm(dataloader, total=len(dataloader),position=0, leave=True):
         # Add original labels - use later for evaluation.
         true_labels += batch['labels'].numpy().flatten().tolist()
 
@@ -97,7 +97,7 @@ def validation(model, dataloader, device_):
     model.eval()
     count = 0
     # Evaluate data for one epoch
-    for batch in tqdm(dataloader, total=len(dataloader)):
+    for batch in tqdm(dataloader, total=len(dataloader), position=0, leave=True):
         # add original labels
         true_labels += batch['labels'].numpy().flatten().tolist()
 
@@ -161,7 +161,7 @@ def inference(model, dataloader, device_, output_path):
     model.eval()
 
     # Evaluate data for one epoch
-    for batch in tqdm(dataloader, total=len(dataloader)):
+    for batch in tqdm(dataloader, total=len(dataloader),position=0, leave=True):
         file_ids += batch['file_id'].numpy().flatten().tolist()
         # move batch to device
         batch = {k: v.type(torch.long).to(device_) for k, v in batch.items() if k != 'file_id'}

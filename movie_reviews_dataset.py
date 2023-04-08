@@ -46,6 +46,7 @@ class MovieReviewsDataset(Dataset):
                     content = io.open(file_path, mode='r', encoding='utf-8').read()
                     # Fix any unicode issues.
                     content = fix_text(content)
+
                     # Save content.
                     self.texts.append(content)
                     # Save encode labels.

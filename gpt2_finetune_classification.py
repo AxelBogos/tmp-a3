@@ -9,7 +9,10 @@ from transformers import (set_seed,
                           GPT2Tokenizer,
                           AdamW,
                           get_linear_schedule_with_warmup,
-                          GPT2ForSequenceClassification)
+                          GPT2ForSequenceClassification,
+                          AutoModelForSequenceClassification,
+                          AutoConfig,
+                          AutoTokenizer)
 
 from training_loops import train, validation, inference
 from helpers import plot_roc_auc, get_dataloaders
@@ -23,11 +26,11 @@ def main():
 
     # Get model configuration.
     print('Loading configuraiton...')
-    model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path=model_name_or_path, num_labels=n_labels)
+    model_config = AutoConfig.from_pretrained(pretrained_model_name_or_path=model_name_or_path, num_labels=n_labels)
 
     # Get model's tokenizer.
     print('Loading tokenizer...')
-    tokenizer = GPT2Tokenizer.from_pretrained(pretrained_model_name_or_path=model_name_or_path)
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=model_name_or_path)
     # default to left padding
     tokenizer.padding_side = "left"
     # Define PAD Token = EOS Token = 50256
@@ -35,7 +38,7 @@ def main():
 
     # Get the actual model.
     print('Loading model...')
-    model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
+    model = AutoModelForSequenceClassification.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
                                                           config=model_config)
 
     # resize model embedding to match new tokenizer
