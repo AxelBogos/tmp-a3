@@ -1,21 +1,18 @@
 from tqdm import tqdm
-from torch.utils.data import DataLoader
 import os
 from datetime import datetime
-from defines import epochs, batch_size, max_length, device, model_name_or_path, labels_ids, n_labels, random_seed
-from gpt2_classification_collator import Gpt2ClassificationCollator
+from defines import epochs, device, model_name_or_path, labels_ids, n_labels, random_seed
 from ml_things import plot_dict, plot_confusion_matrix
 from sklearn.metrics import classification_report, accuracy_score
-from transformers import (set_seed,
+from transformers import (set_seed, 
                           GPT2Config,
                           GPT2Tokenizer,
                           AdamW,
                           get_linear_schedule_with_warmup,
                           GPT2ForSequenceClassification)
 
-from movie_reviews_dataset import MovieReviewsDataset
 from training_loops import train, validation, inference
-from helpers import plot_roc_auc
+from helpers import plot_roc_auc, get_dataloaders
 
 
 def main():
@@ -51,50 +48,7 @@ def main():
     model.to(device)
     print('Model loaded to `%s`' % device)
 
-    # Create data collator to encode text and labels into numbers.
-    gpt2_classificaiton_collator = Gpt2ClassificationCollator(use_tokenizer=tokenizer,
-                                                              labels_encoder=labels_ids,
-                                                              max_sequence_len=max_length,
-                                                              split='train/val')
-
-    print('Dealing with Train...')
-    # Create pytorch dataset.
-    train_dataset = MovieReviewsDataset(path='./data/train',
-                                        use_tokenizer=tokenizer, split='train')
-    print('Created `train_dataset` with %d examples!' % len(train_dataset))
-
-    # Move pytorch dataset into dataloader.
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,
-                                  collate_fn=gpt2_classificaiton_collator)
-    print('Created `train_dataloader` with %d batches!' % len(train_dataloader))
-
-    print()
-
-    print('Dealing with Validation...')
-    # Create pytorch dataset.
-    valid_dataset = MovieReviewsDataset(path='./data/val',
-                                        use_tokenizer=tokenizer, split='val')
-    print('Created `valid_dataset` with %d examples!' % len(valid_dataset))
-
-    # Move pytorch dataset into dataloader.
-    valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False,
-                                  collate_fn=gpt2_classificaiton_collator)
-    print('Created `eval_dataloader` with %d batches!' % len(valid_dataloader))
-
-    gpt2_classificaiton_collator_test = Gpt2ClassificationCollator(use_tokenizer=tokenizer,
-                                                                   labels_encoder=labels_ids,
-                                                                   max_sequence_len=max_length,
-                                                                   split='test')
-    print('Dealing with Test...')
-    # Create pytorch dataset.
-    test_dataset = MovieReviewsDataset(path='./data/test',
-                                       use_tokenizer=tokenizer, split='test')
-    print('Created `test_dataset` with %d examples!' % len(test_dataset))
-
-    # Move pytorch dataset into dataloader.
-    test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False,
-                                 collate_fn=gpt2_classificaiton_collator_test)
-    print('Created `test_dataloader` with %d batches!' % len(test_dataloader))
+    test_dataloader, train_dataloader, valid_dataloader = get_dataloaders(tokenizer)
 
     ## **Train**
 
@@ -105,9 +59,6 @@ def main():
                       eps=1e-8  # default is 1e-8.
                       )
 
-    # Total number of training steps is number of batches * number of epochs.
-    # `train_dataloader` contains batched data so `len(train_dataloader)` gives
-    # us the number of batches.
     total_steps = len(train_dataloader) * epochs
 
     # Create the learning rate scheduler.
@@ -127,7 +78,8 @@ def main():
         print()
         print('Training on batches...')
         # Perform one full pass over the training set.
-        train_labels, train_predict, train_probs, train_loss = train(model, train_dataloader, optimizer, scheduler, device)
+        train_labels, train_predict, train_probs, train_loss = train(model, train_dataloader, optimizer, scheduler,
+                                                                     device)
         train_acc = accuracy_score(train_labels, train_predict)
 
         # Get prediction form model on validation data.
@@ -159,6 +111,7 @@ def main():
               path=os.path.join(output_path, 'acc.png'))
 
     plot_roc_auc(all_labels, all_probs, os.path.join(output_path, 'roc_auc.png'))
+
     ## **Evaluate**
 
     # Get prediction form model on validation data. This is where you should use
@@ -178,9 +131,8 @@ def main():
                           magnify=0.1, path=os.path.join(output_path, 'confusion_matrix.png')
                           )
 
-
     # Infer on test set.
-    inference(model, test_dataloader, device,output_path)
+    inference(model, test_dataloader, device, output_path)
 
 
 if __name__ == "__main__":
