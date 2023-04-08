@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc
 from torch.utils.data import DataLoader
 
-from defines import labels_ids, max_length, batch_size
+from defines import labels_ids, max_length
 from gpt2_classification_collator import Gpt2ClassificationCollator
 from movie_reviews_dataset import MovieReviewsDataset
 
@@ -33,7 +33,7 @@ def plot_roc_auc(all_labels, all_probs, output_path):
     plt.close()
 
 
-def get_dataloaders(tokenizer):
+def get_dataloaders(tokenizer,batch_size):
     # Create data collator to encode text and labels into numbers.
     gpt2_classificaiton_collator = Gpt2ClassificationCollator(use_tokenizer=tokenizer,
                                                               labels_encoder=labels_ids,
