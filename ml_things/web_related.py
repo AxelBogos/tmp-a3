@@ -15,9 +15,8 @@
 """Functions related to web applications"""
 
 import os
-import warnings
-
 import requests
+import warnings
 
 
 def download_from(url, path):

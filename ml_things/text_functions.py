@@ -14,8 +14,8 @@
 # limitations under the License.
 """Functions that deal with text/string"""
 
-import copy
 import re
+import copy
 import string
 
 

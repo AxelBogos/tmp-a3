@@ -14,10 +14,9 @@
 # limitations under the License.
 """Functions related to plotting"""
 
-import warnings
-
 import matplotlib.pyplot as plt
 import numpy as np
+import warnings
 from sklearn.metrics import confusion_matrix
 
 # Magnify intervals where font size matters
