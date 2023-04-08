@@ -144,20 +144,18 @@ def main(learning_rate=None, batch_size=None):
 
 
 if __name__ == "__main__":
-    import optuna
-
-
-    def objective(trial):
-        learning_rate = trial.suggest_float("learning_rate", 1e-6, 1e-4, log=True)
-        batch_size = trial.suggest_categorical("batch_size", [16, 32, 64])
-
-        # Pass the learning_rate and batch_size to your main function or training loop
-        # Replace the current learning_rate and batch_size values with these optimized ones
-        # Make sure your main function returns the validation loss as the optimization metric
-        val_loss = main(learning_rate=learning_rate, batch_size=batch_size)
-        return val_loss
-
-
-    study = optuna.create_study(direction="minimize")
-    study.optimize(objective, n_trials=15)
-    # main()
+    # import optuna
+    # def objective(trial):
+    #     learning_rate = trial.suggest_float("learning_rate", 1e-6, 1e-4, log=True)
+    #     batch_size = trial.suggest_categorical("batch_size", [16, 32, 64])
+    #
+    #     # Pass the learning_rate and batch_size to your main function or training loop
+    #     # Replace the current learning_rate and batch_size values with these optimized ones
+    #     # Make sure your main function returns the validation loss as the optimization metric
+    #     val_loss = main(learning_rate=learning_rate, batch_size=batch_size)
+    #     return val_loss
+    #
+    #
+    # study = optuna.create_study(direction="minimize")
+    # study.optimize(objective, n_trials=15)
+    main()

@@ -42,7 +42,7 @@ def get_dataloaders(tokenizer,batch_size):
     print('Dealing with Train...')
     # Create pytorch dataset.
     train_dataset = MovieReviewsDataset(path='./data/train',
-                                        use_tokenizer=tokenizer, split='train')
+                                        use_tokenizer=tokenizer, split='train', backtranslate_enabled=True)
     print('Created `train_dataset` with %d examples!' % len(train_dataset))
     # Move pytorch dataset into dataloader.
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,
@@ -52,7 +52,7 @@ def get_dataloaders(tokenizer,batch_size):
     print('Dealing with Validation...')
     # Create pytorch dataset.
     valid_dataset = MovieReviewsDataset(path='./data/val',
-                                        use_tokenizer=tokenizer, split='val')
+                                        use_tokenizer=tokenizer, split='val', backtranslate_enabled=True)
     print('Created `valid_dataset` with %d examples!' % len(valid_dataset))
     # Move pytorch dataset into dataloader.
     valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False,
@@ -65,7 +65,7 @@ def get_dataloaders(tokenizer,batch_size):
     print('Dealing with Test...')
     # Create pytorch dataset.
     test_dataset = MovieReviewsDataset(path='./data/test',
-                                       use_tokenizer=tokenizer, split='test')
+                                       use_tokenizer=tokenizer, split='test', backtranslate_enabled=True)
     print('Created `test_dataset` with %d examples!' % len(test_dataset))
     # Move pytorch dataset into dataloader.
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False,
