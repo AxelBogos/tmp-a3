@@ -5,6 +5,7 @@ from tqdm import tqdm
 from defines import labels_ids
 from datetime import datetime
 
+
 def train(model, dataloader, optimizer_, scheduler_, device_):
     # Tracking variables.
     predictions_labels = []
@@ -131,7 +132,7 @@ def validation(model, dataloader, device_):
     return true_labels, predictions_labels, avg_epoch_loss
 
 
-def inference(model, dataloader, device_):
+def inference(model, dataloader, device_, output_path):
     # Tracking variables
     predictions_labels = []
     file_ids = []
@@ -179,6 +180,6 @@ def inference(model, dataloader, device_):
     output_labels = np.array(list(labels_ids.keys()))[predictions_labels]
     pred_df = pd.DataFrame(np.array([file_ids, output_labels]).T, columns=['file_id', 'prediction'])
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-    pred_df.to_csv(f'./preds/{timestamp}_test_sample.csv')
+    pred_df.to_csv(f'./{output_path}/Axel_Bogos.csv')
     # Return all true labels and prediciton for future evaluations.
     return file_ids, predictions_labels

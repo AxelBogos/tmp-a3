@@ -2,32 +2,6 @@ import torch
 
 
 class Gpt2ClassificationCollator(object):
-    r"""
-        Data Collator used for GPT2 in a classificaiton rask.
-
-        It uses a given tokenizer and label encoder to convert any text and labels to numbers that
-        can go straight into a GPT2 model.
-
-        This class is built with reusability in mind: it can be used as is as long
-        as the `dataloader` outputs a batch in dictionary format that can be passed
-        straight into the model - `model(**batch)`.
-
-        Arguments:
-
-            use_tokenizer (:obj:`transformers.tokenization_?`):
-                    Transformer type tokenizer used to process raw text into numbers.
-
-            labels_ids (:obj:`dict`):
-                    Dictionary to encode any labels names into numbers. Keys map to
-                    labels names and Values map to number associated to those labels.
-
-            max_sequence_len (:obj:`int`, `optional`)
-                    Value to indicate the maximum desired sequence to truncate or pad text
-                    sequences. If no value is passed it will used maximum sequence size
-                    supported by the tokenizer and model.
-
-        """
-
     def __init__(self, use_tokenizer, labels_encoder, max_sequence_len=None, split='train/val'):
 
         # Tokenizer to be used inside the class.

@@ -1,6 +1,7 @@
 from tqdm import tqdm
 from torch.utils.data import DataLoader
-
+import os
+from datetime import datetime
 from defines import epochs, batch_size, max_length, device, model_name_or_path, labels_ids, n_labels, random_seed
 from gpt2_classification_collator import Gpt2ClassificationCollator
 from ml_things import plot_dict, plot_confusion_matrix
@@ -18,6 +19,9 @@ from training_loops import train, validation, inference
 
 def main():
     set_seed(random_seed)
+    output_path = f'./preds/{datetime.now().strftime("%Y-%m-%d_%H-%M")}'
+    if not os.path.isdir(output_path):
+        os.makedirs(output_path)
 
     # Get model configuration.
     print('Loading configuraiton...')
@@ -140,10 +144,12 @@ def main():
         all_acc['val_acc'].append(val_acc)
 
     # Plot loss curves.
-    plot_dict(all_loss, use_xlabel='Epochs', use_ylabel='Value', use_linestyles=['-', '--'])
+    plot_dict(all_loss, use_xlabel='Epochs', use_ylabel='Value', use_linestyles=['-', '--'],
+              path=os.path.join(output_path, 'loss.png'))
 
     # Plot accuracy curves.
-    plot_dict(all_acc, use_xlabel='Epochs', use_ylabel='Value', use_linestyles=['-', '--'])
+    plot_dict(all_acc, use_xlabel='Epochs', use_ylabel='Value', use_linestyles=['-', '--'],
+              path=os.path.join(output_path, 'acc.png'))
 
     ## **Evaluate**
 
@@ -156,15 +162,16 @@ def main():
                                               target_names=list(labels_ids.keys()))
     # Show the evaluation report.
     print(evaluation_report)
+    print(evaluation_report, file=open(os.path.join(output_path, 'report.txt'), 'w'))
 
     # Plot confusion matrix.
     plot_confusion_matrix(y_true=true_labels, y_pred=predictions_labels,
                           classes=list(labels_ids.keys()), normalize=True,
-                          magnify=0.1,
+                          magnify=0.1, path=os.path.join(output_path, 'confusion_matrix.png')
                           )
 
     # Infer on test set.
-    inference(model, test_dataloader, device)
+    inference(model, test_dataloader, device,output_path)
 
 
 if __name__ == "__main__":
