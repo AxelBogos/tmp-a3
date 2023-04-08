@@ -1,5 +1,5 @@
 import torch
-epochs = 10
+epochs = 2
 batch_size = 32
 max_length = 60
 device = 'cpu'
