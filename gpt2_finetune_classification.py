@@ -104,11 +104,11 @@ def main():
 
     # Plot loss curves.
     plot_dict(all_loss, use_xlabel='Epochs', use_ylabel='Value', use_linestyles=['-', '--'],
-              path=os.path.join(output_path, 'loss.png'))
+              path=os.path.join(output_path, 'loss.png'),show_plot=False)
 
     # Plot accuracy curves.
     plot_dict(all_acc, use_xlabel='Epochs', use_ylabel='Value', use_linestyles=['-', '--'],
-              path=os.path.join(output_path, 'acc.png'))
+              path=os.path.join(output_path, 'acc.png'), show_plot=False)
 
     plot_roc_auc(all_labels, all_probs, os.path.join(output_path, 'roc_auc.png'))
 
@@ -128,7 +128,7 @@ def main():
     # Plot confusion matrix.
     plot_confusion_matrix(y_true=true_labels, y_pred=predictions_labels,
                           classes=list(labels_ids.keys()), normalize=True,
-                          magnify=0.1, path=os.path.join(output_path, 'confusion_matrix.png')
+                          magnify=0.1, path=os.path.join(output_path, 'confusion_matrix.png'), show_plot=False
                           )
 
     # Infer on test set.
