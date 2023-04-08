@@ -72,9 +72,10 @@ def train(model, dataloader, optimizer_, scheduler_, device_):
         # Convert these logits to list of predicted labels values.
         predictions_labels += logits.argmax(axis=-1).flatten().tolist()
 
-        count += 1
-        if count > 1:
-            break
+        #UNCOMMENT FOR DEBUGGING
+        # count += 1
+        # if count > 1:
+        #     break
 
     # Calculate the average loss over the training data.
     avg_epoch_loss = total_loss / len(dataloader)
@@ -138,9 +139,10 @@ def validation(model, dataloader, device_):
             # update list
             predictions_labels += predict_content
 
-            count += 1
-            if count > 1:
-                break
+            # UNCOMMENT FOR DEBUGGING
+            # count += 1
+            # if count > 1:
+            #     break
 
     # Calculate the average loss over the training data.
     avg_epoch_loss = total_loss / len(dataloader)
