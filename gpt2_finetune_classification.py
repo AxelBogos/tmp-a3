@@ -166,5 +166,6 @@ def main():
     # Infer on test set.
     inference(model, test_dataloader, device)
 
+
 if __name__ == "__main__":
     main()

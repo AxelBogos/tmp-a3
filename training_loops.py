@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
 import torch
-from IPython import embed
 from tqdm import tqdm
 from defines import labels_ids
-
+from datetime import datetime
 
 def train(model, dataloader, optimizer_, scheduler_, device_):
     # Tracking variables.
@@ -179,7 +178,7 @@ def inference(model, dataloader, device_):
 
     output_labels = np.array(list(labels_ids.keys()))[predictions_labels]
     pred_df = pd.DataFrame(np.array([file_ids, output_labels]).T, columns=['file_id', 'prediction'])
-    embed()
-    pred_df.to_csv('./test_sample.csv')
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
+    pred_df.to_csv(f'./preds/{timestamp}_test_sample.csv')
     # Return all true labels and prediciton for future evaluations.
     return file_ids, predictions_labels
