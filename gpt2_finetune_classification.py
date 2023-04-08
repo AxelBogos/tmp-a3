@@ -15,6 +15,7 @@ from transformers import (set_seed,
 
 from movie_reviews_dataset import MovieReviewsDataset
 from training_loops import train, validation, inference
+from helpers import plot_roc_auc
 
 
 def main():
@@ -155,7 +156,7 @@ def main():
 
     # Get prediction form model on validation data. This is where you should use
     # your test data.
-    true_labels, predictions_labels, avg_epoch_loss = validation(model, valid_dataloader, device)
+    true_labels, predictions_labels, prediction_probs, avg_epoch_loss = validation(model, valid_dataloader, device)
 
     # Create the evaluation report.
     evaluation_report = classification_report(true_labels, predictions_labels, labels=list(labels_ids.values()),
@@ -169,6 +170,7 @@ def main():
                           classes=list(labels_ids.keys()), normalize=True,
                           magnify=0.1, path=os.path.join(output_path, 'confusion_matrix.png')
                           )
+    plot_roc_auc(true_labels, prediction_probs[:, 1], os.path.join(output_path, 'roc_auc.png'))
 
     # Infer on test set.
     inference(model, test_dataloader, device,output_path)

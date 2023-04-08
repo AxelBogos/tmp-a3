@@ -78,6 +78,7 @@ def validation(model, dataloader, device_):
     # Tracking variables
     predictions_labels = []
     true_labels = []
+    predictions_probs = []
     # total loss for this epoch.
     total_loss = 0
 
@@ -119,6 +120,9 @@ def validation(model, dataloader, device_):
             # from the tensor.
             total_loss += loss.item()
 
+            # get predicts probabilities
+            predictions_probs.append(logits)
+
             # get predicitons to list
             predict_content = logits.argmax(axis=-1).flatten().tolist()
 
@@ -129,7 +133,7 @@ def validation(model, dataloader, device_):
     avg_epoch_loss = total_loss / len(dataloader)
 
     # Return all true labels and prediciton for future evaluations.
-    return true_labels, predictions_labels, avg_epoch_loss
+    return true_labels, predictions_labels, predictions_probs, avg_epoch_loss
 
 
 def inference(model, dataloader, device_, output_path):
