@@ -4,6 +4,7 @@ import os
 from ftfy import fix_text
 from torch.utils.data import Dataset
 from tqdm import tqdm
+from transformers import MarianMTModel, MarianTokenizer
 
 
 class MovieReviewsDataset(Dataset):
@@ -20,7 +21,10 @@ class MovieReviewsDataset(Dataset):
 
     """
 
-    def __init__(self, path, use_tokenizer, split):
+    def __init__(self, path, use_tokenizer, split, backtranslate_enabled=False, target_lang='fr'):
+
+        self.backtranslate_enabled = backtranslate_enabled
+        self.target_lang = target_lang
 
         # Check if path exists.
         if not os.path.isdir(path):
@@ -51,6 +55,12 @@ class MovieReviewsDataset(Dataset):
                     self.texts.append(content)
                     # Save encode labels.
                     self.labels.append(label)
+
+                    if self.backtranslate_enabled:
+                        backtranslated_text = self.backtranslate(content, target_lang=self.target_lang)
+                        self.texts.append(backtranslated_text)
+                        self.labels.append(label)
+
             # Number of exmaples.
             self.n_examples = len(self.labels)
         else:
@@ -93,3 +103,24 @@ class MovieReviewsDataset(Dataset):
             return {'text': self.texts[item],
                     'label': None,
                     'file_id': self.file_ids[item]}
+
+    def backtranslate(self, text, source_lang='en', target_lang='fr'):
+        # Initialize the tokenizer and model for translation to the target language
+        tokenizer_to = MarianTokenizer.from_pretrained(f'Helsinki-NLP/opus-mt-{source_lang}-{target_lang}')
+        model_to = MarianMTModel.from_pretrained(f'Helsinki-NLP/opus-mt-{source_lang}-{target_lang}')
+
+        # Tokenize the text and translate to the target language
+        encoded = tokenizer_to.encode(text, return_tensors='pt')
+        translated = model_to.generate(encoded)
+        target_text = tokenizer_to.decode(translated[0])
+
+        # Initialize the tokenizer and model for translation back to the original language
+        tokenizer_back = MarianTokenizer.from_pretrained(f'Helsinki-NLP/opus-mt-{target_lang}-{source_lang}')
+        model_back = MarianMTModel.from_pretrained(f'Helsinki-NLP/opus-mt-{target_lang}-{source_lang}')
+
+        # Tokenize the target language text and translate back to the original language
+        encoded = tokenizer_back.encode(target_text, return_tensors='pt')
+        back_translated = model_back.generate(encoded)
+        backtranslated_text = tokenizer_back.decode(back_translated[0])
+
+        return backtranslated_text
