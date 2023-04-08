@@ -3,44 +3,10 @@ import pandas as pd
 import torch
 from IPython import embed
 from tqdm import tqdm
+from defines import labels_ids
 
-from gpt2_finetune_classification import labels_ids
 
-
-def train(dataloader, optimizer_, scheduler_, device_):
-    r"""
-    Train pytorch model on a single pass through the data loader.
-
-    It will use the global variable `model` which is the transformer model
-    loaded on `_device` that we want to train on.
-
-    This function is built with reusability in mind: it can be used as is as long
-        as the `dataloader` outputs a batch in dictionary format that can be passed
-        straight into the model - `model(**batch)`.
-
-    Arguments:
-
-            dataloader (:obj:`torch.utils.data.dataloader.DataLoader`):
-                    Parsed data into batches of tensors.
-
-            optimizer_ (:obj:`transformers.optimization.AdamW`):
-                    Optimizer used for training.
-
-            scheduler_ (:obj:`torch.optim.lr_scheduler.LambdaLR`):
-                    PyTorch scheduler.
-
-            device_ (:obj:`torch.device`):
-                    Device used to load tensors before feeding to model.
-
-    Returns:
-
-            :obj:`List[List[int], List[int], float]`: List of [True Labels, Predicted
-                Labels, Train Average Loss].
-    """
-
-    # Use global variable for model.
-    global model
-
+def train(model, dataloader, optimizer_, scheduler_, device_):
     # Tracking variables.
     predictions_labels = []
     true_labels = []
@@ -108,34 +74,7 @@ def train(dataloader, optimizer_, scheduler_, device_):
     return true_labels, predictions_labels, avg_epoch_loss
 
 
-def validation(dataloader, device_):
-    r"""Validation function to evaluate model performance on a
-    separate set of data.
-
-    This function will return the true and predicted labels so we can use later
-    to evaluate the model's performance.
-
-    This function is built with reusability in mind: it can be used as is as long
-        as the `dataloader` outputs a batch in dictionary format that can be passed
-        straight into the model - `model(**batch)`.
-
-    Arguments:
-
-        dataloader (:obj:`torch.utils.data.dataloader.DataLoader`):
-                    Parsed data into batches of tensors.
-
-        device_ (:obj:`torch.device`):
-                    Device used to load tensors before feeding to model.
-
-    Returns:
-
-        :obj:`List[List[int], List[int], float]`: List of [True Labels, Predicted
-                Labels, Train Average Loss]
-    """
-
-    # Use global variable for model.
-    global model
-
+def validation(model, dataloader, device_):
     # Tracking variables
     predictions_labels = []
     true_labels = []
@@ -193,34 +132,7 @@ def validation(dataloader, device_):
     return true_labels, predictions_labels, avg_epoch_loss
 
 
-def inference(dataloader, device_):
-    r"""Validation function to evaluate model performance on a
-    separate set of data.
-
-    This function will return the true and predicted labels so we can use later
-    to evaluate the model's performance.
-
-    This function is built with reusability in mind: it can be used as is as long
-        as the `dataloader` outputs a batch in dictionary format that can be passed
-        straight into the model - `model(**batch)`.
-
-    Arguments:
-
-        dataloader (:obj:`torch.utils.data.dataloader.DataLoader`):
-                    Parsed data into batches of tensors.
-
-        device_ (:obj:`torch.device`):
-                    Device used to load tensors before feeding to model.
-
-    Returns:
-
-        :obj:`List[List[int], List[int], float]`: List of [True Labels, Predicted
-                Labels, Train Average Loss]
-    """
-
-    # Use global variable for model.
-    global model
-
+def inference(model, dataloader, device_):
     # Tracking variables
     predictions_labels = []
     file_ids = []
