@@ -198,7 +198,6 @@ def inference(model, dataloader, device_, output_path):
 
     output_labels = np.array(list(labels_ids.keys()))[predictions_labels]
     pred_df = pd.DataFrame(np.array([file_ids, output_labels]).T, columns=['file_id', 'prediction'])
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
     pred_df.to_csv(f'./{output_path}/Axel_Bogos.csv')
     # Return all true labels and prediciton for future evaluations.
     return file_ids, predictions_labels
